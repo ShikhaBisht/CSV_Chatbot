@@ -137,6 +137,14 @@ if st.button("Submit Query", type="primary"):
                 # Log the exception to the terminal for debugging
                 logging.error("Error processing the response: %s", e)
 
-                # Error message in case of exceptions.
-                st.error("Oops! Something went wrong while processing your query. Please try again later.")
+                # Check if the error is a rate limit exceeded error (error code 413)
+                if "Request too large" in str(e):
+                    st.error("Your request is too large for the model's current token limit. Please try again with a smaller context.")
+                
+                # Check if the error is a rate limit exceeded error (error code 429)
+                elif "Rate limit reached" in str(e):
+                    st.error("You have exceeded the rate limit. Please try again later.")
 
+                else:
+                    # For other errors, show a general message
+                    st.error("Oops! Something went wrong while processing your query. Please try again later.")

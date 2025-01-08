@@ -53,43 +53,45 @@ def query_agent(query):
         df,
         agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
         verbose=True,
-        allow_dangerous_code=True
+        allow_dangerous_code=True,
+        agent_executor_kwargs={"handle_parsing_errors": True}
         )
     
 
     prompt = (
         """
     
-            You are a helpful assistant trained to respond to the following query related to given dataframe. 
+            You are a Chatbot assistant trained to respond to the following query related to given dataframe in an interactive manner. 
             Always be polite and ask for clarification if needed.
 
-            For the following query, if it requires drawing a table, reply as follows:
-            {"table": {"columns": ["column1", "column2", ...], "data": [[value1, value2, ...], [value1, value2, ...], ...]}}
-
-            If the query requires creating a bar chart, reply as follows:
+            If the query requires creating a bar chart then do the same and follow the below format:
             {"bar": {"columns": ["A", "B", "C", ...], "data": [25, 24, 10, ...]}}
 
-            If the query requires creating a line chart, reply as follows:
+            If the query requires creating a line chart then do the same and follow the below format:
             {"line": {"columns": ["A", "B", "C", ...], "data": [25, 24, 10, ...]}}
 
-            If the query requires creating a pie chart, reply as follows:
+            If the query requires creating a pie chart then do the same and follow the below format:
             {"pie": {"labels": ["A", "B", "C", ...], "values": [25, 24, 10, ...]}}
 
 
             There can only be these types of chart: "bar", "line" and "pie".
 
-            If it is just asking a question that requires neither, reply as follows:
+            else for any query related to the dataframe, if it can be displyed in a table then do the same and follow the below format:
+            {"table": {"columns": ["column1", "column2", ...], "data": [[value1, value2, ...], [value1, value2, ...], ...]}}
+
+
+            If it is just asking a question that requires none of the above, follow the below format:
             {"answer": "answer"}
             Example:
-            {"answer": "The title with the highest rating is 'Gilead'"}
+            {"answer": "The correlation between torque and machine failure is 0.12."}
 
-            Remember to strictly use double quotes("") only in the final answer and everywhere else. Do not use anything else.
 
-            All strings in "columns" list and data list, should be in double quotes,
+            All strings in "keys" list and "data" list, should be in double quotes,
 
-            For example: {"columns": ["title", "ratings_count"], "data": [["Gilead", 361], ["Spider's Web", 5164]]}
+            For example: {"columns": ["uid", "type"], "data": [[1, "L"], [2, "M"]]}
 
-            Lets think step by step.
+            Lets think step by step: Thoughts, Action and then Final Answer. Remember to strictly use only double quotes("") in the final answer and everywhere else. Do not use anything else.
+
 
             Below is the query.
             Query: 
